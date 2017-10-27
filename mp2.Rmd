@@ -20,7 +20,7 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
-glimpse(contributions)
+glimpse(committees)
 ```
 
 
@@ -37,5 +37,9 @@ candidates_filtered
 contributions_filtered <- contributions %>% 
   select(cmte_id, name, city, state, zip_code, transaction_dt, transaction_amt, cand_id, other_id)
 contributions_filtered
+#filter committees 
+committees_filtered <- committees %>% 
+  select(cmte_id, cmte_name, cmte_city, cmte_state, cmte_zip, cmte_party_affiliation, cand_id)
+committees_filtered
 ```
 
