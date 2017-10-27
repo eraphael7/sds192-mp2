@@ -5,6 +5,9 @@ date: "October 31, 2017"
 output: html_document
 ---
 
+```{r}
+```
+
 
 ## Loading the data
 
@@ -16,3 +19,6 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 ```
+git config --global user.name 'Emily Raphael'
+git config --global user.email 'eraphael@smith.edu'
+git config --global --list
