@@ -20,17 +20,22 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
-
+glimpse(contributions)
 ```
 
 
 ```{r, warning = FALSE, include = FALSE}
-house <- house_elections %>%
+#filtered house_elections
+house_filtered <- house_elections %>%
   select(fec_id, general_votes, ge_winner)
-glimpse(house)
-
+house_filtered
+#filtered candidates
 candidates_filtered <- candidates %>% 
-   select(-c(cand_st1, cand_st2, cand_city, cand_state))
+   select(-c(cand_st1, cand_st2, cand_city, cand_state,cand_zip))
 candidates_filtered
+#filtered contributions
+contributions_filtered <- contributions %>% 
+  select(cmte_id, name, city, state, zip_code, transaction_dt, transaction_amt, cand_id, other_id)
+contributions_filtered
 ```
 
