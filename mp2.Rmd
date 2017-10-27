@@ -23,14 +23,33 @@ library(tidyverse)
 
 ```
 
+```{r}
+glimpse(house_elections)
+glimpse(candidates)
+```
 
+
+put tables in a useable format
 ```{r, warning = FALSE, include = FALSE}
-house <- house_elections %>%
+house_filtered <- house_elections %>%
   select(fec_id, general_votes, ge_winner)
 glimpse(house)
 
 candidates_filtered <- candidates %>% 
    select(-c(cand_st1, cand_st2, cand_city, cand_state))
 candidates_filtered
+```
+
+merge the nice tables
+```{r, warning = FALSE, include = FALSE}
+house_elections %>%
+  rename(cand_id = fec_id)
+
+joined_table <- merge(candidates_filtered, house_filtered, all = TRUE)
+```
+
+view the new table
+```{r}
+glimpse(joined_table)
 ```
 
