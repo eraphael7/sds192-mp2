@@ -20,12 +20,6 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
-glimpse(committees)
-```
-
-```{r}
-glimpse(house_elections)
-glimpse(candidates)
 ```
 
 
@@ -55,10 +49,13 @@ committees_filtered
 
 merge the nice tables
 ```{r, warning = FALSE, include = FALSE}
-house_elections %>%
+house_filtered2 <- house_filtered %>%
   rename(cand_id = fec_id)
+house_filtered2
+joined_table <- 
+  left_join(candidates_filtered, house_filtered2, by = "cand_id")
+joined_table
 
-joined_table <- merge(candidates_filtered, house_filtered, all = TRUE)
 ```
 
 view the new table
