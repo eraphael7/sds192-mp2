@@ -50,13 +50,26 @@ committees_filtered
 
 merge the nice tables
 ```{r, warning = FALSE, include = FALSE}
+
 house_filtered2 <- house_filtered %>%
   rename(cand_id = fec_id)
+
 house_filtered2
+
 joined_table <- 
   left_join(candidates_filtered, house_filtered2, by = "cand_id")
 complete_table <- left_join(joined_table, contributions_filtered, by = "cand_id")
+
 complete_table
+```
+
+```{r}
+candidatenames <- 
+  completedtable %>%
+  select(cand_office_state)
+
+kim <- list(candidatenames)
+  
 ```
 
 
@@ -65,37 +78,46 @@ view the new table
 # sorting the complete table
 
 presum_races <- complete_table %>%
-  filter(cand_election_yr == "2012", cand_office == "S", cand_office_state == "CA")
-presum_races
+  filter(cand_election_yr == "2012", cand_office == "S")%>%  
+  group_by(cand_name, transaction_dt) %>%
+  mutate(total = sum(transaction_amt))
+presum_races 
+  
 ```
 ```{r}
-plot <- function (candidate) { 
-  df_candidate <- data.frame(candidate)
-  colnames(df_candidate)[1] <- "cand_name"
-  df_candidate$cand_name <- as.character(df_candidate$cand_name)
+
+
+#in class portion
+plot <- function (x) {
+  presum_races <- presum_races %>%
+    filter(cand_office_state == x) 
   
-  presum_races3 <- presum_races %>% 
-    filter(cand_name %in% candidate)%>% 
-    group_by(cand_name)%>% 
-    spread( key = transaction_dt, value = transaction_amt, fill = 0)%>% 
-    mutate(allcontribute = sum(transaction_amt))%>% 
-    presum_races3 <- df_candidate %>% 
-      left_join(presum_races3, by = "cand_name")
+   find_total <- presum_races %>% 
+      group_by(cand_id)%>%
+      summarise(totalz = sum(abs(transaction_amt)))%>%
+      arrange(desc(totalz)) %>%
+      mutate( id = row_number())%>% 
+      filter(id <= 3)
+top3table <- left_join(presum_races, find_total, by = "cand_id")
   
-  presum_races3 %>% 
-    ggplot(aes(x = transaction_dt, y = allcontribute))+ 
-    geom_col()
+candidate1 <- top3table %>% 
+  filter(id == 1) 
+candidate2 <- top3table %>%
+  filter(id == 2)
+candidate3 <- top3table %>% 
+  filter(id == 3)
+candidate1
+
+plotz <- ggplot(top3table, aes(x = transaction_dt, y = total)) +  
+  geom_point(data = candidate1, aes(x = transaction_dt, y = total), inherit.aes = FALSE) +
+  geom_point(data = candidate2, aes(x = transaction_dt, y = total, color = id), inherit.aes = FALSE) + 
+  geom_point()
+plotz   
 }
-plot("FEINSTEIN, DIANNE")
-```
 
-```{r}
-presum_races2 <- presum_races %>% 
-  filter(cand_office_state == "CA")%>% 
-  group_by(cand_name, transaction_dt)%>% 
-  mutate(allcontribute = sum(transaction_amt))
-presum_races2
-
+plot("CA")
+  
+  
 ```
 
 
