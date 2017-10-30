@@ -20,6 +20,7 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
+
 ```
 
 
@@ -56,8 +57,6 @@ joined_table <-
   left_join(candidates_filtered, house_filtered2, by = "cand_id")
 complete_table <- left_join(joined_table, contributions_filtered, by = "cand_id")
 complete_table
-
-
 ```
 
 
@@ -65,8 +64,43 @@ view the new table
 ```{r}
 # sorting the complete table
 
-specific_races <- complete_table %>%
+presum_races <- complete_table %>%
   filter(cand_election_yr == "2012", cand_office == "S")
-specific_races
+presum_races
+```
+```{r}
+
+
+```
+
+```{r}
+CAstatetest <- presum_races %>%
+    filter(state == "CA") %>%
+    group_by(cand_name)%>%
+    group_by(transaction_dt) %>%
+    mutate(allcontribute = sum(transaction_amt))
+CAstatetest
+
+  function(candidate) {
+
+    
+      
+    
+  }
+
+
+ggplot(CAstatetest, aes( x = transaction_dt, y = allcontribute)) + 
+  geom_line(fill = cand_name) 
+  
+```
+
+
+```{r}
+function(final_race) {
+  presum_races %>%
+    group_by(cand_id) %>%
+    mutate(allcontribute = sum(transaction_amt))
+}
+
 ```
 
