@@ -65,42 +65,37 @@ view the new table
 # sorting the complete table
 
 presum_races <- complete_table %>%
-  filter(cand_election_yr == "2012", cand_office == "S")
+  filter(cand_election_yr == "2012", cand_office == "S", cand_office_state == "CA")
 presum_races
 ```
 ```{r}
-
-
-```
-
-```{r}
-CAstatetest <- presum_races %>%
-    filter(state == "CA") %>%
-    group_by(cand_name)%>%
-    group_by(transaction_dt) %>%
-    mutate(allcontribute = sum(transaction_amt))
-CAstatetest
-
-  function(candidate) {
-
-    
-      
-    
-  }
-
-
-ggplot(CAstatetest, aes( x = transaction_dt, y = allcontribute)) + 
-  geom_line(fill = cand_name) 
+plot <- function (candidate) { 
+  df_candidate <- data.frame(candidate)
+  colnames(df_candidate)[1] <- "cand_name"
+  df_candidate$cand_name <- as.character(df_candidate$cand_name)
   
+  presum_races3 <- presum_races %>% 
+    filter(cand_name %in% candidate)%>% 
+    group_by(cand_name)%>% 
+    spread( key = transaction_dt, value = transaction_amt, fill = 0)%>% 
+    mutate(allcontribute = sum(transaction_amt))%>% 
+    presum_races3 <- df_candidate %>% 
+      left_join(presum_races3, by = "cand_name")
+  
+  presum_races3 %>% 
+    ggplot(aes(x = transaction_dt, y = allcontribute))+ 
+    geom_col()
+}
+plot("FEINSTEIN, DIANNE")
 ```
-
 
 ```{r}
-function(final_race) {
-  presum_races %>%
-    group_by(cand_id) %>%
-    mutate(allcontribute = sum(transaction_amt))
-}
+presum_races2 <- presum_races %>% 
+  filter(cand_office_state == "CA")%>% 
+  group_by(cand_name, transaction_dt)%>% 
+  mutate(allcontribute = sum(transaction_amt))
+presum_races2
 
 ```
+
 
