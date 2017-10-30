@@ -41,7 +41,7 @@ contributions_filtered <- contributions %>%
   select(cmte_id, name, city, state, zip_code, transaction_dt, transaction_amt, cand_id, other_id)
 contributions_filtered
 
-#filter committees 
+ #filter committees 
 committees_filtered <- committees %>% 
   select(cmte_id, cmte_name, cmte_city, cmte_state, cmte_zip, cmte_party_affiliation, cand_id)
 committees_filtered
@@ -54,12 +54,19 @@ house_filtered2 <- house_filtered %>%
 house_filtered2
 joined_table <- 
   left_join(candidates_filtered, house_filtered2, by = "cand_id")
-joined_table
+complete_table <- left_join(joined_table, contributions_filtered, by = "cand_id")
+complete_table
+
 
 ```
 
+
 view the new table
 ```{r}
-glimpse(joined_table)
+# sorting the complete table
+
+specific_races <- complete_table %>%
+  filter(cand_election_yr == "2012", cand_office == "S")
+specific_races
 ```
 
