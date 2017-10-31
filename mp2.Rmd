@@ -66,6 +66,7 @@ complete_table
 c <- complete_table %>%
   select(cand_office_state, cand_election_yr, cand_office_state) %>%
   distinct(cand_office_state)
+c
 
 
 kimtest <- complete_table %>%
@@ -73,6 +74,7 @@ kimtest <- complete_table %>%
 
 new <- distinct(kimtest, cand_office_state) %>%
   .$cand_office_state
+new
   
 
 
@@ -94,26 +96,26 @@ presum_races <- dates %>%
   filter(cand_election_yr == "2012", cand_office == "S")%>%  
   group_by(cand_name, transaction_dt) %>%
   mutate(total = sum(transaction_amt))
+presum_races
 
-
-  
 ```
 
 
 ```{r}
 
 kim <- function(state) {
- by_month <- presum_races %>%
-    filter(cand_office_state == state) 
   
- by_month2 <- by_month %>% 
+ monthly <- presum_races %>%
+    filter(cand_office_state == state ) %>%
+    filter(date >= "2012-01-01")
+
+ by_month2 <- monthly %>% 
   mutate(month = format(date, "%m"), year = format(date, "%Y")) %>%
   group_by(cand_id, month, year)%>%
   mutate(monthly_contr = sum(transaction_amt))
  
  by_month3 <-by_month2%>%
    mutate(M = as.integer(month))
-
  
    find_total <- by_month3 %>% 
       group_by(cand_id)%>%
@@ -124,29 +126,42 @@ kim <- function(state) {
    find_total
    
 top3table <- left_join(by_month3, find_total, by = "cand_id")
+top3table
+
+#is this join correct? if left does the state go away?? 
+
+
+
+#gotta put the state variable using filter(cand_office_state == state)
 
 candidate1 <- top3table %>% 
   filter(id == 1) %>%
   mutate(id1 = as.factor(id)) %>%
   mutate( M = as.integer(month))
+
 candidate2 <- top3table %>%
   filter(id == 2)%>%
   mutate(id1 = as.factor(id)) %>%
   mutate( M = as.integer(month))
-candidate2
+
 candidate3 <- top3table %>% 
   filter(id == 3) %>%
+  mutate(id1 = as.factor(id))%>%
   mutate( M = as.integer(month))
 
 plotz <- 
   ggplot(top3table, aes(x = M, y = monthly_contr)) +  
   geom_point(data = candidate2, aes(x = M, y = monthly_contr, color = id1)) + 
   geom_point(data = candidate1, aes(x = M, y = monthly_contr, color = id1)) +
+  geom_point(data = candidate3, aes(x = M, y = monthly_contr, color = id1)) + 
   geom_line(data = candidate1, aes(x = M, y = monthly_contr, color =id1)) +
-  geom_line(data = candidate2, aes(x = M, y = monthly_contr, color = id1)) + ggtitle(state)
+  geom_line(data = candidate2, aes(x = M, y = monthly_contr, color = id1)) + 
+  geom_line(data = candidate3, aes(x = M, y = monthly_contr, color = id1)) 
+  #ggtitle()
 
-plotz}
+plotz
+}
 
 
-lapply(new, kim)
+
 ```
