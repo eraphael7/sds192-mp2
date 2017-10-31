@@ -62,7 +62,21 @@ complete_table <- left_join(joined_table, contributions_filtered, by = "cand_id"
 
 complete_table
 ```
+```{r}
+c <- complete_table %>%
+  select(cand_office_state, cand_election_yr, cand_office_state) %>%
+  distinct(cand_office_state)
 
+
+kimtest <- complete_table %>%
+  filter(cand_election_yr == "2012", cand_office == "S") 
+
+new <- distinct(kimtest, cand_office_state) %>%
+  .$cand_office_state
+  
+
+
+```
 ```{r}
 #lubridate
 require(lubridate)
@@ -70,10 +84,6 @@ require(lubridate)
 dates <- complete_table %>% 
   mutate(date = mdy(transaction_dt))
 glimpse(dates)
-
-
-
-
 ```
 
 view the new table
@@ -85,78 +95,58 @@ presum_races <- dates %>%
   group_by(cand_name, transaction_dt) %>%
   mutate(total = sum(transaction_amt))
 
-by_month <- presum_races %>% 
+
+  
+```
+
+
+```{r}
+
+kim <- function(state) {
+ by_month <- presum_races %>%
+    filter(cand_office_state == state) 
+  
+ by_month2 <- by_month %>% 
   mutate(month = format(date, "%m"), year = format(date, "%Y")) %>%
-  group_by(month,year)%>%
-  mutate(monthly_contr = sum(transaction_amt))%>%
-  mutate( bymonth = paste(c(month,year)))%>% 
-  mutate( month_year = as.Date(bymonth, format = "%m.%Y"))
-  
-by_month
-  
-```
-```{r}
-#in class portion
-plot <- function (x) {
-  by_month <- by_month %>%
-    filter(cand_office_state == x) 
-  by_month
+  group_by(cand_id, month, year)%>%
+  mutate(monthly_contr = sum(transaction_amt))
+ 
+ by_month3 <-by_month2%>%
+   mutate(M = as.integer(month))
 
-   find_total <- by_month %>% 
+ 
+   find_total <- by_month3 %>% 
       group_by(cand_id)%>%
       summarise(totalz = sum(abs(transaction_amt)))%>%
       arrange(desc(totalz)) %>%
       mutate( id = row_number())%>% 
       filter(id <= 3)
    find_total
-top3table <- left_join(graph_by_month, find_total, by = "cand_id")
-glimpse(top3table)
-  
+   
+top3table <- left_join(by_month3, find_total, by = "cand_id")
+
 candidate1 <- top3table %>% 
-  filter(id == 1) 
+  filter(id == 1) %>%
+  mutate(id1 = as.factor(id)) %>%
+  mutate( M = as.integer(month))
 candidate2 <- top3table %>%
-  filter(id == 2)
+  filter(id == 2)%>%
+  mutate(id1 = as.factor(id)) %>%
+  mutate( M = as.integer(month))
+candidate2
 candidate3 <- top3table %>% 
-  filter(id == 3)
+  filter(id == 3) %>%
+  mutate( M = as.integer(month))
 
 plotz <- 
-  ggplot(top3table, aes(x = date, y = monthly_contr)) +  
-  geom_col(data = candidate1, aes(x = date, y = monthly_contr), inherit.aes = FALSE) +
-  geom_col(data = candidate2, aes(x = date, y = monthly_contr, color = id), inherit.aes = FALSE) 
-plotz  
-}
+  ggplot(top3table, aes(x = M, y = monthly_contr)) +  
+  geom_point(data = candidate2, aes(x = M, y = monthly_contr, color = id1)) + 
+  geom_point(data = candidate1, aes(x = M, y = monthly_contr, color = id1)) +
+  geom_line(data = candidate1, aes(x = M, y = monthly_contr, color =id1)) +
+  geom_line(data = candidate2, aes(x = M, y = monthly_contr, color = id1)) + ggtitle(state)
 
-plot("CA")
+plotz}
 
 
+lapply(new, kim)
 ```
-
-```{r}
- by_month <- by_month %>%
-    filter(cand_office_state == "CA") 
-  by_month
-
-   find_total <- by_month %>% 
-      group_by(cand_id)%>%
-      summarise(totalz = sum(abs(transaction_amt)))%>%
-      arrange(desc(totalz)) %>%
-      mutate( id = row_number())%>% 
-      filter(id <= 3)
-   find_total
-top3table <- left_join(by_month, find_total, by = "cand_id")
-top3table
-  
-candidate1 <- top3table %>% 
-  filter(id == 1) 
-candidate2 <- top3table %>%
-  filter(id == 2)
-candidate3 <- top3table %>% 
-  filter(id == 3)
-
-plotz <- 
-  ggplot(top3table, aes(x = month(), y = monthly_contr)) +  
-  geom_col(data = candidate1, aes(x = month, y = monthly_contr), inherit.aes = FALSE) +
-  geom_col(data = candidate2, aes(x = month, y = monthly_contr, color = id), inherit.aes = FALSE) 
-plotz 
-```
-
