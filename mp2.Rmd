@@ -1,12 +1,10 @@
 ---
 title: "Mini-Project 2"
-author: "Your Name Here"
+author: "Kim Zhang, Emily Raphael, Maddie Haines"
 date: "October 31, 2017"
 output: html_document
 ---
 ## Loading the data
-
-This project is so interesting and relevant to my life! yayy 
 
 ```{r, include=FALSE}
 
@@ -15,7 +13,6 @@ load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
-
 ```
 
 
@@ -70,10 +67,8 @@ kimtest <- complete_table %>%
 new <- distinct(kimtest, cand_office_state) %>%
   .$cand_office_state
 new
-  
-
-
 ```
+
 ```{r}
 #lubridate
 require(lubridate)
@@ -92,7 +87,6 @@ presum_races <- dates %>%
   group_by(cand_name, transaction_dt) %>%
   mutate(total = sum(transaction_amt))
 presum_races
-
 ```
 
 
@@ -156,7 +150,4 @@ plotz <-
 
 plotz
 }
-
-
-
 ```
