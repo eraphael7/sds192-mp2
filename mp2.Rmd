@@ -120,7 +120,6 @@ top3table
 #is this join correct? if left does the state go away?? 
 
 
-
 #gotta put the state variable using filter(cand_office_state == state)
 
 candidate1 <- top3table %>% 
