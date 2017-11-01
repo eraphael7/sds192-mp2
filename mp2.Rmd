@@ -1,37 +1,23 @@
 ---
 title: "Mini-Project 2"
-<<<<<<< HEAD
-author: "Kim Zhang, Emily Raphael, Maddie Haines"
-date: "October 31, 2017"
-output: html_document
----
-## Loading the data
-
-```{r, include=FALSE}
-
-=======
 author: "Kimberly Zhang, Emily Raphael, Maddie Haines "
 date: "October 31, 2017"
 output: html_document
 ---
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 #loading data 
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
 load("house_elections.rda")
 load("candidates.rda")
 load("committees.rda")
 load("contributions.rda")
 library(tidyverse)
-<<<<<<< HEAD
-=======
 require(scales)
 library(ggthemes)
-
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
 ```
 
-```{r, message = FALSE}
+First we will make each of the tables into a more usable form.
+```{r, message = FALSE, warning = FALSE}
 #filtered candidates
 candidates_filtered <- candidates %>% 
    select(-c(cand_st1, cand_st2, cand_city, cand_state,cand_zip))
@@ -45,12 +31,14 @@ committees_filtered <- committees %>%
   select(cmte_id, cmte_name, cmte_city, cmte_state, cmte_zip, cmte_party_affiliation, cand_id)
 ```
 
-```{r, message = FALSE}
+Here we joined the tables created above into a single table containing all of the data we need.
+```{r, message = FALSE, warning = FALSE}
 #joining the filtered tables
 complete_table <- left_join(candidates_filtered, contributions_filtered, by = "cand_id")
 ```
 
-```{r, message = FALSE}
+Here we created a list of all of the states relevant to our data set. 
+```{r, message = FALSE, warning = FALSE}
 #creating list of state names for function
 c <- complete_table %>%
   select(cand_office_state, cand_election_yr, cand_office_state) %>%
@@ -61,17 +49,10 @@ kimtest <- complete_table %>%
 #Final list
 state_names <- distinct(kimtest, cand_office_state) %>%
   .$cand_office_state
-<<<<<<< HEAD
-new
 ```
 
-```{r}
-=======
-
-```
-
-```{r, message = FALSE}
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
+Here we put the dates into a more usable format.
+```{r, message = FALSE, warning = FALSE}
 #lubridate
 require(lubridate)
 #changes int dates into actual dates
@@ -79,20 +60,17 @@ dates <- complete_table %>%
   mutate(date = mdy(transaction_dt))
 ```
 
-```{r, message = FALSE}
+Here we made sure we were only using the relevant dates.
+```{r, message = FALSE, warning = FALSE}
 
 # sorting the complete table, only interested in Senate, 2012 races in the timeline of the election year
 filtered_names <- dates %>%
   filter(cand_election_yr == "2012", cand_office == "S", date >= "2012-01-01")%>%  
   group_by(cand_name, transaction_dt) %>%
   mutate(total = sum(transaction_amt))
-<<<<<<< HEAD
-presum_races
-=======
-
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
 ```
 
+This function takes the data we have prepared in the above code chunks and applies it. The end result of the function is a color-coded graph which compares monthly contributions for each candidate.
 ```{r, message = FALSE, echo = FALSE, warning = FALSE}
 #the function that gives a graph of each state senate election (functioned by state)
 state_graphs <- function(st) {
@@ -124,17 +102,7 @@ state_graphs <- function(st) {
       filter(id <= 3)
 #joins identifier back to the complete table 
 top3table <- left_join(by_month3, find_total, by = "cand_id")
-<<<<<<< HEAD
-top3table
-
-#is this join correct? if left does the state go away?? 
-
-
-#gotta put the state variable using filter(cand_office_state == state)
-
-=======
 #creates a seperate data table for each candidate so they can be graphed together on the same ggplot
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
 candidate1 <- top3table %>% 
   filter(id == 1) %>%
   mutate(id1 = as.factor(id)) %>%
@@ -160,21 +128,22 @@ top3table %>%
   geom_line(data = candidate3, aes(x = M, y = monthly_contr, color = cand_name), inherit.aes = FALSE) +
   #turns off scientific notation
   scale_y_continuous(labels = comma) +
-  scale_x_continuous(breaks = c(01,03,05,07,09,11), label = c("Jan", "Mar", "May", "July", "Sept", "Nov"))+
+  scale_x_continuous(breaks = c(01,03,05,07,09,11), label = c("Jan", "Mar", "May", "July", "Sept", "Nov")) +
   labs(x = "Month", y = "Contributions ($)") + 
-  ggtitle(st)+
-  theme_economist()+
+  ggtitle(st) +
+  theme_economist() +
   theme(legend.title = element_blank(), 
         legend.text = element_text(size = 9))
 }
-<<<<<<< HEAD
-```
-=======
 
 lapply(state_names, state_graphs)
+```
 
+**State Example: California**
+This visualization shows us how much money was contributed to each candidate in the months leading up to the election, allowing us to compare how much money each candidate had and to see spikes and dips in the number of contributions each candidate received.
+```{r, message = FALSE, echo = FALSE, warning = FALSE}
+state_graphs("CA")
 ```
 
 **blog post**
 We used the 2012 Federal Election Commission (FEC) 2012 Senate races data, specifically the candidates and committees dataset. Our objective was to look at candidate contributions over time. We focused on Senate candidates in 2012 measuring the total monthly contributions given during the election year only. As expected, we see a general spike before November for all candidates, however the amount of contributions varies widely. These differences are due to the state dynamics of committee/PAC contributions versus individual contributions, as well as candidates who remain unchallenged and therefore recieve fewer contributions (usually incumbents). It also depends on how impactful party officials have deemed the state in terms of overall strategy. If the state matters more, then party officials will financially and politically support that candidates, which results in higher amounts of money that specific election. 
->>>>>>> f049ce8ad3613b6760623be8377afad633d90602
